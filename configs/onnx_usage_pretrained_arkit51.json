@@ -1,0 +1,99 @@
+{
+  "name": "UniTalker official pretrained (ARKit 51)",
+  "run_id": "pretrained",
+  "label": "UniTalker official (D0-D7)",
+  "strategy": "PRETRAINED",
+  "output_kind": "arkit_51",
+  "channels": 51,
+  "dataset": "D3",
+  "infer_dataset": "D3_3DETF",
+  "data_root": "data/unitalker_data/",
+  "checkpoint": "models/unitalker/pretrained/UniTalker-B-D0-D7.pt",
+  "onnx": "models/unitalker/pretrained/unitalker_arkit51_pretrained.onnx",
+  "onnx_metadata": "models/unitalker/pretrained/unitalker_arkit51_pretrained.json",
+  "template_npy": "data/unitalker_data/D3D4_3DETF/D3_HDTF/id_template.npy",
+  "selection_note": "프로덕션 ARKit 51 경로. 3DETF 52ch head → tongueOut 제거.",
+  "onnx_contract": {
+    "opset": 18,
+    "sample_rate": 16000,
+    "fps": 30,
+    "inputs": {
+      "audio": {
+        "dtype": "float32",
+        "shape": "[batch, audio_samples]",
+        "description": "mono 16kHz PCM. dynamic length."
+      },
+      "template": {
+        "dtype": "float32",
+        "shape": "[batch, 52]",
+        "description": "id_template.npy[template_idx] * scale(1.0). pretrained 기본 template_idx=0."
+      },
+      "style_idx": {
+        "dtype": "int64",
+        "shape": "[batch]",
+        "description": "speaker/identity index. pretrained 기본 0."
+      },
+      "num_frames": {
+        "dtype": "int64",
+        "shape": "[1]",
+        "description": "round(audio_samples / 16000 * fps)"
+      }
+    },
+    "outputs": {
+      "blendshape": {
+        "dtype": "float32",
+        "shape": "[batch, num_frames, 51]",
+        "description": "ARKit 51 blendshape weights (tongueOut 제거, 알파벳순)."
+      }
+    }
+  },
+  "blendshape_names": [
+    "browDownLeft", "browDownRight", "browInnerUp", "browOuterUpLeft", "browOuterUpRight",
+    "cheekPuff", "cheekSquintLeft", "cheekSquintRight", "eyeBlinkLeft", "eyeBlinkRight",
+    "eyeLookDownLeft", "eyeLookDownRight", "eyeLookInLeft", "eyeLookInRight",
+    "eyeLookOutLeft", "eyeLookOutRight", "eyeLookUpLeft", "eyeLookUpRight",
+    "eyeSquintLeft", "eyeSquintRight", "eyeWideLeft", "eyeWideRight",
+    "jawForward", "jawLeft", "jawOpen", "jawRight", "mouthClose",
+    "mouthDimpleLeft", "mouthDimpleRight", "mouthFrownLeft", "mouthFrownRight",
+    "mouthFunnel", "mouthLeft", "mouthLowerDownLeft", "mouthLowerDownRight",
+    "mouthPressLeft", "mouthPressRight", "mouthPucker", "mouthRight",
+    "mouthRollLower", "mouthRollUpper", "mouthShrugLower", "mouthShrugUpper",
+    "mouthSmileLeft", "mouthSmileRight", "mouthStretchLeft", "mouthStretchRight",
+    "mouthUpperUpLeft", "mouthUpperUpRight", "noseSneerLeft", "noseSneerRight"
+  ],
+  "usage": {
+    "re_export": "python models/unitalker/export_onnx.py --checkpoint models/unitalker/pretrained/UniTalker-B-D0-D7.pt --output models/unitalker/pretrained/unitalker_arkit51_pretrained.onnx --dataset D3 --arkit-51 --verify",
+    "python_onnxruntime_example": [
+      "import numpy as np",
+      "import onnxruntime as ort",
+      "import librosa",
+      "",
+      "onnx_path = 'models/unitalker/pretrained/unitalker_arkit51_pretrained.onnx'",
+      "sess = ort.InferenceSession(onnx_path, providers=['CUDAExecutionProvider', 'CPUExecutionProvider'])",
+      "",
+      "audio, sr = librosa.load('input.wav', sr=16000, mono=True)",
+      "audio = audio.astype(np.float32)[None, :]",
+      "template = np.load('data/unitalker_data/D3D4_3DETF/D3_HDTF/id_template.npy')[0].astype(np.float32)[None, :]",
+      "style_idx = np.array([0], dtype=np.int64)",
+      "num_frames = np.array([int(round(audio.shape[1] / 16000 * 30))], dtype=np.int64)",
+      "",
+      "blendshape, = sess.run(None, {",
+      "    'audio': audio,",
+      "    'template': template,",
+      "    'style_idx': style_idx,",
+      "    'num_frames': num_frames,",
+      "})",
+      "# blendshape.shape -> (1, num_frames, 51)"
+    ],
+    "long_audio": "25s chunk + 5s overlap merge는 PyTorch 경로 infer_audio_to_csv.split_long_audio / merge_out_list와 동일하게 ONNX 외부에서 적용.",
+    "api_equivalent": {
+      "endpoint": "POST /api/inference",
+      "body": {
+        "run": "pretrained",
+        "checkpoint": "UniTalker-B-D0-D7.pt",
+        "speaker": 0,
+        "audio_base64": "<16kHz mono WAV base64>"
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+run_id,dataset_for_blendshape,template_idx,alias,label,strategy,output_kind,is_default
+pretrained,D3_3DETF,0,"vanilla,official",UniTalker official (D0-D7),PRETRAINED,arkit_51,false
+results_D8_control260_pretrained,D8,0,,"D8 MetaHuman 260ch PRETRAINED (legacy, no ckpt)",PRETRAINED,metahuman_260,false
+results_D8_metahuman_pretrained,D8,0,,"D8 MetaHuman FT (vertex rec, unused)",PRETRAINED,metahuman_260,false
+results_D8_control_pretrained,D8,0,,D8 MetaHuman FT control-MSE,PRETRAINED,metahuman_260,false
+results_D8D9_nuridam_pretrained,D9,0,,"D8+D9 Nuridam FT (vertex rec, unused)",PRETRAINED,metahuman_260,false
+results_D8D9_nuridam_control_pretrained,D9,0,,D8+D9 Nuridam FT control-MSE,PRETRAINED,metahuman_260,false
+results_D9_nuridam_pretrained,D9,0,,"D9 Nuridam FT (vertex rec, unused)",PRETRAINED,metahuman_260,false
+results_D9_nuridam_control_pretrained,D9,0,,D9 Nuridam FT control-MSE,PRETRAINED,metahuman_260,true
+results_D9_nuridam_scratch,D9,0,,"D9 Nuridam scratch (vertex rec, unused)",STANDALONE,metahuman_260,false
+results_D9_nuridam_control_scratch,D9,0,,D9 Nuridam scratch control-MSE,STANDALONE,metahuman_260,false
+results_D8D10_arkit2mh_pretrained,D8,0,,"D8+D10 EN/ZH ARKit->MH FT control-MSE (style 0 마루샘 / 174 평균)",PRETRAINED,metahuman_260,false

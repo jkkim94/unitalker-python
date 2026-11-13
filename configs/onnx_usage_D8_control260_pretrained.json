@@ -1,0 +1,91 @@
+{
+  "name": "D8 MetaHuman 260ch PRETRAINED (val_loss #1)",
+  "run_id": "results_D8_control260_pretrained",
+  "label": "D8 MetaHuman 260ch PRETRAINED",
+  "strategy": "PRETRAINED",
+  "output_kind": "metahuman_260",
+  "channels": 260,
+  "dataset": "D8",
+  "data_root": "data/unitalker_data/",
+  "checkpoint": "models/unitalker/results_D8_control260_pretrained/best.pt",
+  "onnx": "models/unitalker/results_D8_control260_pretrained/unitalker_d8_control260_pretrained.onnx",
+  "onnx_metadata": "models/unitalker/results_D8_control260_pretrained/unitalker_d8_control260_pretrained.json",
+  "feature_names": "data/unitalker_data/D8_metahuman_control/feature_names.txt",
+  "template_npy": "data/unitalker_data/D8_metahuman_control/id_template.npy",
+  "val_metrics_at_best": {
+    "epoch": 4,
+    "val_loss": 0.00339118,
+    "metric": "rec_L2_loss (validation)"
+  },
+  "rank_among_candidates": 1,
+  "selection_note": "ONNX 배포 대상 (D8 PRETRAINED). ARKit pretrained와 함께 서비스용 2종.",
+  "onnx_contract": {
+    "opset": 18,
+    "sample_rate": 16000,
+    "fps": 30,
+    "inputs": {
+      "audio": {
+        "dtype": "float32",
+        "shape": "[batch, audio_samples]",
+        "description": "mono 16kHz PCM. dynamic length."
+      },
+      "template": {
+        "dtype": "float32",
+        "shape": "[batch, 260]",
+        "description": "id_template.npy[template_idx] * scale(1.0). 단일 화자 D8는 template_idx=0."
+      },
+      "style_idx": {
+        "dtype": "int64",
+        "shape": "[batch]",
+        "description": "speaker/identity index. D8 단일 화자 → 0."
+      },
+      "num_frames": {
+        "dtype": "int64",
+        "shape": "[1]",
+        "description": "round(audio_samples / 16000 * fps)"
+      }
+    },
+    "outputs": {
+      "blendshape": {
+        "dtype": "float32",
+        "shape": "[batch, num_frames, 260]",
+        "description": "MetaHuman rig control values. RigLogic 260열 전체."
+      }
+    }
+  },
+  "usage": {
+    "re_export": "python models/unitalker/export_onnx.py --checkpoint models/unitalker/results_D8_control260_pretrained/best.pt --output models/unitalker/results_D8_control260_pretrained/unitalker_d8_control260_pretrained.onnx --dataset D8 --verify",
+    "python_onnxruntime_example": [
+      "import numpy as np",
+      "import onnxruntime as ort",
+      "import librosa",
+      "",
+      "onnx_path = 'models/unitalker/results_D8_control260_pretrained/unitalker_d8_control260_pretrained.onnx'",
+      "sess = ort.InferenceSession(onnx_path, providers=['CUDAExecutionProvider', 'CPUExecutionProvider'])",
+      "",
+      "audio, sr = librosa.load('input.wav', sr=16000, mono=True)",
+      "audio = audio.astype(np.float32)[None, :]",
+      "template = np.load('data/unitalker_data/D8_metahuman_control/id_template.npy')[0].astype(np.float32)[None, :]",
+      "style_idx = np.array([0], dtype=np.int64)",
+      "num_frames = np.array([int(round(audio.shape[1] / 16000 * 30))], dtype=np.int64)",
+      "",
+      "controls, = sess.run(None, {",
+      "    'audio': audio,",
+      "    'template': template,",
+      "    'style_idx': style_idx,",
+      "    'num_frames': num_frames,",
+      "})",
+      "# controls.shape -> (1, num_frames, 260)"
+    ],
+    "long_audio": "25s chunk + 5s overlap merge는 PyTorch 경로 infer_audio_to_csv.split_long_audio / merge_out_list와 동일하게 ONNX 외부에서 적용.",
+    "api_equivalent": {
+      "endpoint": "POST /api/inference",
+      "body": {
+        "run": "results_D8_control260_pretrained",
+        "checkpoint": "best.pt",
+        "speaker": 0,
+        "audio_base64": "<16kHz mono WAV base64>"
+      }
+    }
+  }
+}

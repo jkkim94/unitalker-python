@@ -1,0 +1,69 @@
+# D8 (마루샘) + D10 (D3/D4 영어 + D6 중국어 ARKit → MetaHuman 260ch 변환) FT from UniTalker-B-D0-D7.pt
+# - control MSE (r2 방식), RigLogic vertex rec 없음
+# - D10 loss는 loss_channel_mask.npy 채널만 (D8이 쓰는 하관 27ch)
+# - 260 head: Epic 매핑으로 pretrained 3DETF head에서 초기화, D10 화자 style은 pretrained row 복사
+# - best.pt는 D8 val 기준
+# - random_id_prob 0.1: 마지막 style row(174)가 전 화자(D8+D10) 평균 스타일로 학습됨
+#   style_idx 0 = 마루샘, 1-141 D3, 142-165 D4, 166-173 D6, 174 = 평균
+DATA:
+  dataset: "D8,D10"
+  demo_dataset: "D8"
+  data_root: "/home/motion/AI/trainFramework/data/unitalker_data/"
+  duplicate_list: "3,1"
+  train_json_key: train.json
+  inference_dataset: "D8"
+
+LOSS:
+  rec_weight: 1.0
+  pca_weight: 0.0
+  blendshape_weight: 0.0001
+  lve_weight: 0.0
+  use_metahuman_riglogic_rec: false
+
+NETWORK:
+  use_pca: False
+  pca_dim: 512
+
+MODEL:
+  audio_encoder_repo: "microsoft/wavlm-base-plus"
+  freeze_wav2vec: False
+  interpolate_pos: 1
+  decoder_dimension: 256
+  decoder_type: conv
+  period: 30
+  headlayer: 1
+
+TRAIN:
+  fix_encoder_first: true
+  random_id_prob: 0.1
+  re_init_decoder_and_head: False
+  only_head: False
+  workers: 4
+  batch_size: 1
+  batch_size_val: 1
+  lr: 0.0001
+  weight_decay: 0.0
+  grad_clip_norm: 1.0
+  epochs: 30
+  early_stop_on_train_plateau: False
+  early_stop_on_val_plateau: True
+  val_plateau_patience: 10
+  val_plateau_min_delta: 0.000001
+  min_epochs_before_stop: 10
+  val_checkpoint_dataset: "D8"
+  style_emb_init_from_pretrained: true
+  metahuman_head_init_npz: "data/unitalker_data/D10_arkit2mh/arkit52_to_metahuman260.npz"
+  save_every: 1
+  save_path: "/home/motion/AI/trainFramework/models/unitalker/results_D8D10_arkit2mh_pretrained"
+  weight_path: "/home/motion/AI/trainFramework/models/unitalker/pretrained/UniTalker-B-D0-D7.pt"
+  eval_every: 1
+  test_every: 1
+  log_every: 1
+  do_test: True
+
+WANDB:
+  enabled: true
+  project: "unitalker"
+  group: "D8_metahuman"
+  tags: ["metahuman", "d8", "d10", "arkit2mh", "control260", "finetune", "control_mse"]
+  name: "D8D10_arkit2mh_pretrained"

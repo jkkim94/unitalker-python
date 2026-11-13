@@ -1,0 +1,85 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+dist/
+build/
+.venv/
+.venv_*/
+venv/
+
+# Secrets
+.env
+.wandb_api_key
+*.pem
+*.key
+
+# Data (large)
+data/
+*.npy
+*.npz
+*.pkl
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.bin
+*.dna
+
+# Training results / weights
+**/results/*.pt
+**/results/*.pth
+**/results/blendshape_samples/
+**/results/events.out.tfevents.*
+**/inference_debug/
+models/unitalker/results_*/
+models/unitalker/pretrained/
+models/unitalker/*.wav
+wandb/
+logs/
+tmp_debug/
+reports/
+artifacts/
+
+# DNA / RigLogic migrate dumps (local only)
+MIGRATE_DNA/
+MIGRATE_RigLogic/
+MIGRATE_riglogic_py/
+MIGRATE_riglogic_py.zip
+MIGRATE_docs/
+metahuman/
+*.zip
+*.pptx
+/AS_MP_*.csv
+/server_frames.csv
+/SoundWave_*.csv
+
+# Third-party build artifacts
+third_party/riglogic/build/
+third_party/riglogic/__pycache__/
+third_party/riglogic/*.so
+third_party/RigLogicLib/
+
+# IDE / OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+.cursor/
+.cursorignore
+
+# Logs / media
+*.log
+*.mp4
+*.pdf
+*.wav
+
+# Test / demo outputs
+test_results/
+test_audios/
+experiments/quick_validation/
+experiments/phase0_foundation/forced_alignment/output/
+data/shared_resources/

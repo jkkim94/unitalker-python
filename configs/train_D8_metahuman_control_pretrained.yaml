@@ -1,0 +1,60 @@
+# D8 MetaHuman 260ch — PRETRAINED fine-tune (UniTalker-B-D0-D7.pt), Eq.(2) rec + 0.0001·control(bs)
+DATA:
+  dataset: "D8"
+  demo_dataset: "D8"
+  data_root: "/home/motion/omotion/trainFramework/data/unitalker_data/"
+  duplicate_list: "1"
+  train_json_key: train.json
+  inference_dataset: "D8"
+
+LOSS:
+  rec_weight: 1.0
+  pca_weight: 0.0
+  blendshape_weight: 0.0001
+  lve_weight: 0.0
+  metahuman_riglogic_basis_path: "data/shared_resources/metahuman_D8_control260_riglogic_basis.npz"
+
+NETWORK:
+  use_pca: False
+  pca_dim: 512
+
+MODEL:
+  audio_encoder_repo: "microsoft/wavlm-base-plus"
+  freeze_wav2vec: False
+  interpolate_pos: 1
+  decoder_dimension: 256
+  decoder_type: conv
+  period: 30
+  headlayer: 1
+
+TRAIN:
+  fix_encoder_first: true
+  random_id_prob: 0.0
+  re_init_decoder_and_head: False
+  only_head: False
+  workers: 4
+  batch_size: 1
+  batch_size_val: 1
+  lr: 0.0001
+  weight_decay: 0.0
+  grad_clip_norm: 1.0
+  epochs: 50
+  early_stop_on_train_plateau: False
+  early_stop_on_val_plateau: True
+  val_plateau_patience: 20
+  val_plateau_min_delta: 0.000001
+  min_epochs_before_stop: 50
+  save_every: 1
+  save_path: "/home/motion/omotion/trainFramework/models/unitalker/results_D8_control260_pretrained"
+  weight_path: "/home/motion/omotion/trainFramework/models/unitalker/pretrained/UniTalker-B-D0-D7.pt"
+  eval_every: 1
+  test_every: 1
+  log_every: 1
+  do_test: True
+
+WANDB:
+  enabled: true
+  project: "unitalker"
+  group: "D8_control260"
+  tags: ["metahuman", "d8", "control260", "pretrained", "rec_bs"]
+  name: "D8_control260_pretrained_r4_clean"

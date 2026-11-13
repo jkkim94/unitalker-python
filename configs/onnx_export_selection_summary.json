@@ -1,0 +1,36 @@
+{
+  "title": "ONNX export selection — ARKit pretrained + D8 PRETRAINED",
+  "generated": "2026-06-17",
+  "selected_for_onnx": [
+    "pretrained",
+    "results_D8_control260_pretrained"
+  ],
+  "candidates": [
+    {
+      "run_id": "pretrained",
+      "label": "UniTalker official (D0-D7)",
+      "strategy": "PRETRAINED",
+      "output_kind": "arkit_51",
+      "checkpoint": "models/unitalker/pretrained/UniTalker-B-D0-D7.pt",
+      "onnx_exported": true,
+      "onnx": "models/unitalker/pretrained/unitalker_arkit51_pretrained.onnx",
+      "usage_json": "configs/onnx_usage_pretrained_arkit51.json",
+      "note": "3DETF 52ch head → tongueOut 제거 → 51ch. 서버 arkit_51 경로와 동일."
+    },
+    {
+      "run_id": "results_D8_control260_pretrained",
+      "label": "D8 MetaHuman 260ch PRETRAINED",
+      "strategy": "PRETRAINED",
+      "output_kind": "metahuman_260",
+      "onnx_exported": false,
+      "onnx": "models/unitalker/results_D8_control260_pretrained/unitalker_d8_control260_pretrained.onnx",
+      "usage_json": "configs/onnx_usage_D8_control260_pretrained.json",
+      "note": "Pending re-export after clean D8 fine-tune"
+    }
+  ],
+  "excluded": [],
+  "selection_criterion": "서비스 배포 대상: ARKit pretrained + D8 PRETRAINED only",
+  "verify": {
+    "verify_atol": 0.001
+  }
+}

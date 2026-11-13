@@ -1,0 +1,9 @@
+{
+  "name": "UniTalker official pretrained (D0-D7)",
+  "dataset": "D3",
+  "infer_dataset": "D3_3DETF",
+  "data_root": "data/unitalker_data/",
+  "checkpoint": "models/unitalker/pretrained/UniTalker-B-D0-D7.pt",
+  "annot_dim": 52,
+  "note": "서비스 run `pretrained`와 동일 체크포인트"
+}

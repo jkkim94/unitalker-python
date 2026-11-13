@@ -1,0 +1,61 @@
+# 2) D9-only fine-tune from UniTalker-B-D0-D7.pt
+# r2와 동일: rec = control MSE (RigLogic vertex rec 끔)
+DATA:
+  dataset: "D9"
+  demo_dataset: "D9"
+  data_root: "/home/motion/AI/trainFramework/data/unitalker_data/"
+  duplicate_list: "1"
+  train_json_key: train.json
+  inference_dataset: "D9"
+
+LOSS:
+  rec_weight: 1.0
+  pca_weight: 0.0
+  blendshape_weight: 0.0001
+  lve_weight: 0.0
+  use_metahuman_riglogic_rec: false
+
+NETWORK:
+  use_pca: False
+  pca_dim: 512
+
+MODEL:
+  audio_encoder_repo: "microsoft/wavlm-base-plus"
+  freeze_wav2vec: False
+  interpolate_pos: 1
+  decoder_dimension: 256
+  decoder_type: conv
+  period: 30
+  headlayer: 1
+
+TRAIN:
+  fix_encoder_first: true
+  random_id_prob: 0.0
+  re_init_decoder_and_head: False
+  only_head: False
+  workers: 4
+  batch_size: 1
+  batch_size_val: 1
+  lr: 0.0001
+  weight_decay: 0.0
+  grad_clip_norm: 1.0
+  epochs: 50
+  early_stop_on_train_plateau: False
+  early_stop_on_val_plateau: True
+  val_plateau_patience: 20
+  val_plateau_min_delta: 0.000001
+  min_epochs_before_stop: 50
+  save_every: 1
+  save_path: "/home/motion/AI/trainFramework/models/unitalker/results_D9_nuridam_control_pretrained"
+  weight_path: "/home/motion/AI/trainFramework/models/unitalker/pretrained/UniTalker-B-D0-D7.pt"
+  eval_every: 1
+  test_every: 1
+  log_every: 1
+  do_test: True
+
+WANDB:
+  enabled: true
+  project: "unitalker"
+  group: "D9_nuridam"
+  tags: ["metahuman", "d9", "nuridam", "control260", "finetune", "control_mse"]
+  name: "D9_nuridam_control_pretrained"

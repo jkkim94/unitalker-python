@@ -1,0 +1,14 @@
+# FastAPI 서비스 실행에 필요한 추가 패키지
+# 기본 UniTalker 환경에 추가로 설치
+
+# chumpy(FLAME) 호환: np.bool, np.int 등이 1.24에서 제거됨
+numpy>=1.20,<1.24
+
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+pydantic>=2.0.0
+scipy>=1.10.0
+httpx>=0.24.0
+
+# Weights & Biases (W&B) - 학습 관리 프레임워크
+wandb>=0.16.0

@@ -1,0 +1,122 @@
+dataset_config = {
+    "D0": {
+        "dirname": "D0_BIWI",
+        "annot_type": "BIWI_23370_vertices",
+        "scale": 0.2,
+        "annot_dim": 23370 * 3,
+        "subjects": 6,
+        "pca": True,
+    },
+    "D1": {
+        "dirname": "D1_vocaset",
+        "annot_type": "FLAME_5023_vertices",
+        "scale": 1.0,
+        "annot_dim": 5023 * 3,
+        "subjects": 12,
+        "pca": True,
+    },
+    "D2": {
+        "dirname": "D2_meshtalk",
+        "annot_type": "meshtalk_6172_vertices",
+        "scale": 0.001,
+        "annot_dim": 6172 * 3,
+        "subjects": 13,
+        "pca": True,
+    },
+    "D3": {
+        "dirname": "D3D4_3DETF/D3_HDTF",
+        "annot_type": "3DETF_blendshape_weight",
+        "scale": 1.0,
+        "annot_dim": 52,
+        "subjects": 141,
+        "pca": False,
+    },
+    "D4": {
+        "dirname": "D3D4_3DETF/D4_RAVDESS",
+        "annot_type": "3DETF_blendshape_weight",
+        "scale": 1.0,
+        "annot_dim": 52,
+        "subjects": 24,
+        "pca": False,
+    },
+    "D5": {
+        "dirname": "D5_unitalker_faceforensics++",
+        "annot_type": "flame_params_from_dadhead",
+        "scale": 1.0,
+        "annot_dim": 413,
+        "subjects": 719,
+        "pca": False,
+    },
+    "D6": {
+        "dirname": "D6_unitalker_Chinese_speech",
+        "annot_type": "inhouse_blendshape_weight",
+        "scale": 1.0,
+        "annot_dim": 51,
+        "subjects": 8,
+        "pca": False,
+    },
+    "D7": {
+        "dirname": "D7_unitalker_song",
+        "annot_type": "inhouse_blendshape_weight",
+        "scale": 1.0,
+        "annot_dim": 51,
+        "subjects": 11,
+        "pca": False,
+    },
+    # D8 MetaHuman 260ch full control (annot_type=metahuman_control, pca=False).
+    # loss에서 head pose 제외 (metahuman_drop_head_pose.txt).
+    "D8": {
+        "dirname": "D8_metahuman_control",
+        "annot_type": "metahuman_control",
+        "scale": 1.0,
+        "annot_dim": 260,
+        "subjects": 1,
+        "pca": False,
+    },
+    "D8_sanity": {
+        "dirname": "D8_metahuman_1clip_sanity",
+        "annot_type": "metahuman_control",
+        "scale": 1.0,
+        "annot_dim": 260,
+        "subjects": 1,
+        "pca": False,
+    },
+    # train.json 레거시 dataset 필드
+    "D8_Metahuman_Control": {
+        "dirname": "D8_metahuman_control",
+        "annot_type": "metahuman_control",
+        "scale": 1.0,
+        "annot_dim": 260,
+        "subjects": 1,
+        "pca": False,
+    },
+    # D9 Nuridam MetaHuman 260ch (annot_type=metahuman_control, pca=False).
+    "D9": {
+        "dirname": "D9_Nuridam",
+        "annot_type": "metahuman_control",
+        "scale": 1.0,
+        "annot_dim": 260,
+        "subjects": 1,
+        "pca": False,
+    },
+    # train.json dataset 필드
+    "D9_Nuridam": {
+        "dirname": "D9_Nuridam",
+        "annot_type": "metahuman_control",
+        "scale": 1.0,
+        "annot_dim": 260,
+        "subjects": 1,
+        "pca": False,
+    },
+    # D10: D3/D4(EN) + D6(ZH) ARKit → MetaHuman 260ch (util/arkit_to_metahuman.py, Epic PoseAsset 매핑).
+    # loss는 loss_channel_mask.npy 채널(매핑되면서 D8이 쓰는 하관 채널)만 학습.
+    "D10": {
+        "dirname": "D10_arkit2mh",
+        "annot_type": "metahuman_control",
+        "scale": 1.0,
+        "annot_dim": 260,
+        "subjects": 173,
+        "pca": False,
+        "loss_channel_mask": "loss_channel_mask.npy",
+    },
+}

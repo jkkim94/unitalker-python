@@ -1,0 +1,11 @@
+{
+  "baselines": [
+    {
+      "id": "260ch_control_pretrained",
+      "label": "D8 260ch PRETRAINED (rec+bs)",
+      "manifest": "configs/baseline_D8_metahuman_260ch_mse.json",
+      "checkpoint": "models/unitalker/results_D8_control260_pretrained/best.pt",
+      "use_when": "D8 fine-tune baseline after clean restart"
+    }
+  ]
+}

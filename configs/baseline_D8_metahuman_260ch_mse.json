@@ -1,0 +1,14 @@
+{
+  "name": "D8 260ch PRETRAINED baseline (P8)",
+  "dataset": "D8",
+  "data_root": "data/unitalker_data/",
+  "checkpoint": "models/unitalker/results_D8_control260_pretrained/best.pt",
+  "annot_dim": 260,
+  "onnx": "models/unitalker/results_D8_control260_pretrained/unitalker_d8_control260_pretrained.onnx",
+  "training": {
+    "strategy": "PRETRAINED",
+    "yaml": "configs/train_D8_metahuman_control_pretrained.yaml",
+    "loss": "rec + 0.0001*control(bs), lve_weight=0"
+  },
+  "val_metrics_at_best": null
+}
