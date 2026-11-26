@@ -1,0 +1,256 @@
+{
+  "experiment": "results_exp2_control_only_weight1",
+  "network": null,
+  "clip": "/home/motion/AI/trainFramework/data/unitalker_data/overfit_marusam_mh260_on_30/train/0513_01_유해진_기부__0001__c002.npy",
+  "clip_sha256": "30f37f185fa19bdc48c0a5646082e26b3b7814e33c84616bd66b672d139e8973",
+  "frames": 97,
+  "channels": 260,
+  "audio": {
+    "wav": "/home/motion/AI/trainFramework/data/unitalker_data/overfit_marusam_mh260_on_30/train/0513_01_유해진_기부__0001__c002.wav",
+    "sample_rate": 16000,
+    "samples": 51733,
+    "channels": 1,
+    "sample_width_bytes": 2,
+    "seconds": 3.2333125
+  },
+  "init": "zeros",
+  "device": "cpu",
+  "optimizer": "Adam",
+  "lr": 0.001,
+  "betas": [
+    0.9,
+    0.999
+  ],
+  "eps": 1e-08,
+  "weight_decay": 0.0,
+  "loss": "1 * mean((pred-gt)^2) over channels other than HeadPitch, HeadRoll, HeadYaw",
+  "loss_weight": 1.0,
+  "loss_matches": "ParamLoss.forward in models/UniTalker_Vanilla/UniTalker-main/loss/loss.py",
+  "excluded_from_loss": [
+    {
+      "index": 253,
+      "name": "HeadPitch"
+    },
+    {
+      "index": 254,
+      "name": "HeadRoll"
+    },
+    {
+      "index": 258,
+      "name": "HeadYaw"
+    }
+  ],
+  "excluded_stay_in_vector": true,
+  "jaw_index": 62,
+  "jaw_name": "CTRL_expressions_jawOpen",
+  "lip_close": [
+    {
+      "index": 139,
+      "name": "CTRL_expressions_mouthLipsTogetherDL"
+    },
+    {
+      "index": 140,
+      "name": "CTRL_expressions_mouthLipsTogetherDR"
+    },
+    {
+      "index": 141,
+      "name": "CTRL_expressions_mouthLipsTogetherUL"
+    },
+    {
+      "index": 142,
+      "name": "CTRL_expressions_mouthLipsTogetherUR"
+    }
+  ],
+  "active_definition": "GT max-abs > 0 on this clip, and the channel is inside the loss",
+  "active_count": 147,
+  "active_including_head_rot_count": 150,
+  "zero_channel_count": 110,
+  "clip_catalog_by_jaw_std": [
+    {
+      "file": "0513_01_유해진_기부__0001__c000.npy",
+      "frames": 600,
+      "jaw_std": 0.12200180441141129,
+      "jaw_max": 0.6405739784240723,
+      "jaw_mae_from_zero": 0.14554348587989807
+    },
+    {
+      "file": "0513_01_유해진_기부__0001__c001.npy",
+      "frames": 600,
+      "jaw_std": 0.10297398269176483,
+      "jaw_max": 0.43762099742889404,
+      "jaw_mae_from_zero": 0.14034996926784515
+    },
+    {
+      "file": "0513_01_유해진_기부__0001__c002.npy",
+      "frames": 97,
+      "jaw_std": 0.1274138242006302,
+      "jaw_max": 0.5038480162620544,
+      "jaw_mae_from_zero": 0.09571600705385208
+    },
+    {
+      "file": "0513_13_사이버공격_마루샘__0001__c000.npy",
+      "frames": 600,
+      "jaw_std": 0.09914902597665787,
+      "jaw_max": 0.4810430109500885,
+      "jaw_mae_from_zero": 0.16693228483200073
+    },
+    {
+      "file": "0513_13_사이버공격_마루샘__0001__c001.npy",
+      "frames": 600,
+      "jaw_std": 0.11649449914693832,
+      "jaw_max": 0.6048750281333923,
+      "jaw_mae_from_zero": 0.1912214159965515
+    },
+    {
+      "file": "0513_13_사이버공격_마루샘__0001__c002.npy",
+      "frames": 155,
+      "jaw_std": 0.11817127466201782,
+      "jaw_max": 0.36490899324417114,
+      "jaw_mae_from_zero": 0.13171687722206116
+    },
+    {
+      "file": "0515_02_케이팝데몬헌터스__0001__c000.npy",
+      "frames": 600,
+      "jaw_std": 0.08207433670759201,
+      "jaw_max": 0.34343698620796204,
+      "jaw_mae_from_zero": 0.12602394819259644
+    },
+    {
+      "file": "0515_02_케이팝데몬헌터스__0001__c001.npy",
+      "frames": 600,
+      "jaw_std": 0.08963983505964279,
+      "jaw_max": 0.38459399342536926,
+      "jaw_mae_from_zero": 0.11213362216949463
+    },
+    {
+      "file": "0515_02_케이팝데몬헌터스__0001__c002.npy",
+      "frames": 61,
+      "jaw_std": 0.06355433911085129,
+      "jaw_max": 0.24541200697422028,
+      "jaw_mae_from_zero": 0.05948435887694359
+    }
+  ],
+  "sse_share_at_zero_pred": {
+    "head_rot": 0.7343197063212731,
+    "jaw": 0.0011516800440741664,
+    "jaw_within_included": 0.004334834278175075,
+    "lip_close": 0.0339022123199986
+  },
+  "first_jaw_grad_l1": 7.679089321754873e-06,
+  "adam_eps": 1e-08,
+  "stop": "max_steps",
+  "steps": 500,
+  "max_steps": 500,
+  "criteria": {
+    "jaw_mae_below": 0.01,
+    "peak_ratio_at_least": 0.9
+  },
+  "criteria_met": false,
+  "final": {
+    "jaw_mae": 0.003943508956581354,
+    "lip_close_mae": 0.0512654110789299,
+    "active_mae": 0.0126947071403265,
+    "active_including_head_rot_mae": 0.037948980927467346,
+    "included_mae": 0.007261174730956554,
+    "head_rot_mae": 1.2754085063934326,
+    "peak_ratio": 0.7368840575218201,
+    "pred_peak": 0.3712775707244873,
+    "gt_peak": 0.5038480162620544,
+    "gt_peak_frame": 2,
+    "pred_at_gt_peak": 0.3712775707244873,
+    "loss": 0.003213535062968731
+  },
+  "start": {
+    "jaw_mae": 0.09571601450443268,
+    "lip_close_mae": 0.31614455580711365,
+    "active_mae": 0.05862146243453026,
+    "peak_ratio": 0.0
+  },
+  "largest_included_mae": [
+    {
+      "index": 217,
+      "name": "CTRL_expressions_noseWrinkleUpperL",
+      "mae": 0.5605611801147461,
+      "gt_mae_from_zero": 1.0,
+      "gt_max_abs": 1.0
+    },
+    {
+      "index": 218,
+      "name": "CTRL_expressions_noseWrinkleUpperR",
+      "mae": 0.5605611801147461,
+      "gt_mae_from_zero": 1.0,
+      "gt_max_abs": 1.0
+    },
+    {
+      "index": 250,
+      "name": "CTRL_expressions_tongueWide",
+      "mae": 0.21669670939445496,
+      "gt_mae_from_zero": 0.5341001152992249,
+      "gt_max_abs": 1.0
+    },
+    {
+      "index": 241,
+      "name": "CTRL_expressions_tongueThick",
+      "mae": 0.12966670095920563,
+      "gt_mae_from_zero": 0.4997936189174652,
+      "gt_max_abs": 0.5082340240478516
+    },
+    {
+      "index": 234,
+      "name": "CTRL_expressions_tongueIn",
+      "mae": 0.0942368283867836,
+      "gt_mae_from_zero": 0.39710667729377747,
+      "gt_max_abs": 0.7557590007781982
+    },
+    {
+      "index": 142,
+      "name": "CTRL_expressions_mouthLipsTogetherUR",
+      "mae": 0.06413274258375168,
+      "gt_mae_from_zero": 0.3468874394893646,
+      "gt_max_abs": 0.9961779713630676
+    },
+    {
+      "index": 141,
+      "name": "CTRL_expressions_mouthLipsTogetherUL",
+      "mae": 0.06269732862710953,
+      "gt_mae_from_zero": 0.3445627689361572,
+      "gt_max_abs": 0.9853929877281189
+    },
+    {
+      "index": 139,
+      "name": "CTRL_expressions_mouthLipsTogetherDL",
+      "mae": 0.03958657756447792,
+      "gt_mae_from_zero": 0.28750330209732056,
+      "gt_max_abs": 0.5114390254020691
+    },
+    {
+      "index": 140,
+      "name": "CTRL_expressions_mouthLipsTogetherDR",
+      "mae": 0.038644976913928986,
+      "gt_mae_from_zero": 0.28562477231025696,
+      "gt_max_abs": 0.5069900155067444
+    },
+    {
+      "index": 233,
+      "name": "CTRL_expressions_tongueDown",
+      "mae": 0.036624565720558167,
+      "gt_mae_from_zero": 0.08358512818813324,
+      "gt_max_abs": 0.9701740145683289
+    },
+    {
+      "index": 243,
+      "name": "CTRL_expressions_tongueTipDown",
+      "mae": 0.006374834105372429,
+      "gt_mae_from_zero": 0.04180023819208145,
+      "gt_max_abs": 0.6256150007247925
+    },
+    {
+      "index": 107,
+      "name": "CTRL_expressions_mouthLipsPurseUL",
+      "mae": 0.006163119804114103,
+      "gt_mae_from_zero": 0.10353843122720718,
+      "gt_max_abs": 0.5856800079345703
+    }
+  ],
+  "overfit_dir_not_written": "/home/motion/AI/trainFramework/models/UniTalker_Vanilla/results_overfit_marusam_mh260_on_30"
+}

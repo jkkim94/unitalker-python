@@ -11,6 +11,7 @@ Adam steps. Does not read or write the 20-epoch overfit directory.
 
 from __future__ import annotations
 
+import argparse
 import csv
 import hashlib
 import json
@@ -25,6 +26,10 @@ ROOT = Path("/home/motion/AI/trainFramework")
 DATA = ROOT / "data/unitalker_data/overfit_marusam_mh260_on_30"
 OUT = ROOT / "models/UniTalker_Vanilla/results_exp2_control_only_no_head_rot"
 OVERFIT = ROOT / "models/UniTalker_Vanilla/results_overfit_marusam_mh260_on_30"
+PROTECTED = (
+    OVERFIT,
+    OUT,
+)
 
 WEIGHT = 0.0001
 LR = 0.001
@@ -112,10 +117,17 @@ def metrics(pred: torch.Tensor, gt: torch.Tensor, groups: dict[str, torch.Tensor
 
 
 def main() -> None:
-    if OUT.resolve() == OVERFIT.resolve():
-        raise SystemExit("refusing to write the overfit directory")
-    if OUT.exists() and any(OUT.iterdir()):
-        raise SystemExit(f"refusing to overwrite non-empty {OUT}")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--weight", type=float, default=WEIGHT)
+    parser.add_argument("--out", type=Path, default=OUT)
+    args = parser.parse_args()
+    weight = args.weight
+    out = args.out if args.out.is_absolute() else (ROOT / args.out)
+    for protected in PROTECTED:
+        if out.resolve() == protected.resolve():
+            raise SystemExit(f"refusing to write {protected}")
+    if out.exists() and any(out.iterdir()):
+        raise SystemExit(f"refusing to overwrite non-empty {out}")
 
     names = feature_names(DATA / "feature_names.txt")
     clip_path, catalog = select_clip(names)
@@ -146,7 +158,7 @@ def main() -> None:
     }
     opt = torch.optim.Adam([ctrl], lr=LR, betas=(0.9, 0.999), eps=1e-8, weight_decay=0.0)
 
-    OUT.mkdir(parents=True)
+    out.mkdir(parents=True)
     rows = []
     stopped = "max_steps"
     stop_step = MAX_STEPS
@@ -165,7 +177,7 @@ def main() -> None:
     record(0, None, None)
     for step in range(1, MAX_STEPS + 1):
         opt.zero_grad(set_to_none=True)
-        loss = WEIGHT * F.mse_loss(ctrl[:, include_t], gt[:, include_t])
+        loss = weight * F.mse_loss(ctrl[:, include_t], gt[:, include_t])
         loss.backward()
         grad_l1 = float(ctrl.grad[:, jaw_i].abs().mean())
         opt.step()
@@ -196,7 +208,7 @@ def main() -> None:
 
     sse = gt_np.astype(np.float64) ** 2
     summary = {
-        "experiment": "exp2_control_only_no_head_rot",
+        "experiment": out.name,
         "network": None,
         "clip": str(clip_path),
         "clip_sha256": hashlib.sha256(clip_path.read_bytes()).hexdigest(),
@@ -210,8 +222,8 @@ def main() -> None:
         "betas": [0.9, 0.999],
         "eps": 1e-8,
         "weight_decay": 0.0,
-        "loss": "0.0001 * mean((pred-gt)^2) over channels other than HeadPitch, HeadRoll, HeadYaw",
-        "loss_weight": WEIGHT,
+        "loss": f"{weight:g} * mean((pred-gt)^2) over channels other than HeadPitch, HeadRoll, HeadYaw",
+        "loss_weight": weight,
         "loss_matches": "ParamLoss.forward in models/UniTalker_Vanilla/UniTalker-main/loss/loss.py",
         "excluded_from_loss": [
             {"index": int(i), "name": names[i]} for i in head_i
@@ -267,12 +279,12 @@ def main() -> None:
         "overfit_dir_not_written": str(OVERFIT),
     }
 
-    np.save(OUT / "optimized_controls.npy", fitted)
-    (OUT / "metrics.json").write_text(
+    np.save(out / "optimized_controls.npy", fitted)
+    (out / "metrics.json").write_text(
         json.dumps(summary, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
-    with (OUT / "steps.csv").open("w", encoding="utf-8", newline="") as handle:
+    with (out / "steps.csv").open("w", encoding="utf-8", newline="") as handle:
         fields = [
             "step", "loss", "jaw_mae", "lip_close_mae", "active_mae",
             "peak_ratio", "jaw_grad_l1", "pred_peak", "pred_at_gt_peak",
@@ -280,7 +292,7 @@ def main() -> None:
         writer = csv.DictWriter(handle, fieldnames=fields, extrasaction="ignore")
         writer.writeheader()
         writer.writerows(rows)
-    with (OUT / "jaw_curve.csv").open("w", encoding="utf-8", newline="") as handle:
+    with (out / "jaw_curve.csv").open("w", encoding="utf-8", newline="") as handle:
         writer = csv.writer(handle)
         writer.writerow(["frame", "gt_jawOpen", "pred_jawOpen"])
         for frame, (gt_value, pred_value) in enumerate(zip(gt_np[:, jaw_i], fitted[:, jaw_i])):
