@@ -26,9 +26,11 @@ ROOT = Path("/home/motion/AI/trainFramework")
 DATA = ROOT / "data/unitalker_data/overfit_marusam_mh260_on_30"
 OUT = ROOT / "models/UniTalker_Vanilla/results_exp2_control_only_no_head_rot"
 OVERFIT = ROOT / "models/UniTalker_Vanilla/results_overfit_marusam_mh260_on_30"
+WEIGHT1 = ROOT / "models/UniTalker_Vanilla/results_exp2_control_only_weight1"
 PROTECTED = (
     OVERFIT,
     OUT,
+    WEIGHT1,
 )
 
 WEIGHT = 0.0001
@@ -120,9 +122,15 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--weight", type=float, default=WEIGHT)
     parser.add_argument("--out", type=Path, default=OUT)
+    parser.add_argument("--max-steps", type=int, default=MAX_STEPS)
+    parser.add_argument("--init", type=Path, default=None)
     args = parser.parse_args()
     weight = args.weight
+    max_steps = args.max_steps
     out = args.out if args.out.is_absolute() else (ROOT / args.out)
+    init_path = None
+    if args.init is not None:
+        init_path = args.init if args.init.is_absolute() else (ROOT / args.init)
     for protected in PROTECTED:
         if out.resolve() == protected.resolve():
             raise SystemExit(f"refusing to write {protected}")
@@ -146,7 +154,20 @@ def main() -> None:
 
     torch.manual_seed(42)
     gt = torch.from_numpy(gt_np.copy())
-    ctrl = torch.nn.Parameter(torch.zeros_like(gt))
+    init_np = np.zeros_like(gt_np)
+    init_source = "zeros"
+    prior_steps = 0
+    if init_path is not None:
+        init_np = np.load(init_path)
+        if init_np.shape != gt_np.shape or init_np.dtype != np.float32:
+            raise SystemExit(f"init array is {init_np.dtype} {init_np.shape}")
+        init_np = init_np.copy()
+        init_np[:, head_i] = 0
+        init_source = str(init_path)
+        beside = init_path.parent / "metrics.json"
+        if beside.is_file():
+            prior_steps = int(json.loads(beside.read_text(encoding="utf-8")).get("steps") or 0)
+    ctrl = torch.nn.Parameter(torch.from_numpy(init_np))
     include_t = torch.from_numpy(include)
     groups = {
         "jaw": jaw_i,
@@ -161,13 +182,14 @@ def main() -> None:
     out.mkdir(parents=True)
     rows = []
     stopped = "max_steps"
-    stop_step = MAX_STEPS
+    stop_step = max_steps
 
     def record(step: int, loss_value: float | None, grad_l1: float | None) -> dict:
         with torch.no_grad():
             current = metrics(ctrl, gt, groups)
         current.update({
             "step": step,
+            "total_step": prior_steps + step,
             "loss": loss_value,
             "jaw_grad_l1": grad_l1,
         })
@@ -175,7 +197,7 @@ def main() -> None:
         return current
 
     record(0, None, None)
-    for step in range(1, MAX_STEPS + 1):
+    for step in range(1, max_steps + 1):
         opt.zero_grad(set_to_none=True)
         loss = weight * F.mse_loss(ctrl[:, include_t], gt[:, include_t])
         loss.backward()
@@ -215,7 +237,9 @@ def main() -> None:
         "frames": int(gt_np.shape[0]),
         "channels": 260,
         "audio": wav_info(clip_path.with_suffix(".wav")),
-        "init": "zeros",
+        "init": init_source,
+        "prior_steps": prior_steps,
+        "adam_state": "fresh",
         "device": "cpu",
         "optimizer": "Adam",
         "lr": LR,
@@ -249,7 +273,7 @@ def main() -> None:
         "adam_eps": 1e-8,
         "stop": stopped,
         "steps": stop_step,
-        "max_steps": MAX_STEPS,
+        "max_steps": max_steps,
         "criteria": {
             "jaw_mae_below": JAW_MAE_STOP,
             "peak_ratio_at_least": PEAK_RATIO_STOP,
@@ -286,7 +310,7 @@ def main() -> None:
     )
     with (out / "steps.csv").open("w", encoding="utf-8", newline="") as handle:
         fields = [
-            "step", "loss", "jaw_mae", "lip_close_mae", "active_mae",
+            "step", "total_step", "loss", "jaw_mae", "lip_close_mae", "active_mae",
             "peak_ratio", "jaw_grad_l1", "pred_peak", "pred_at_gt_peak",
         ]
         writer = csv.DictWriter(handle, fieldnames=fields, extrasaction="ignore")
